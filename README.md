@@ -7,7 +7,7 @@
 
 > **Репозиторий практической работы №10-11 студента Белоуса.**  
 > **Тема:** Отладка отдельных модулей программного проекта. Организация обработки исключений.  
-> **Цель занятия:** Закрепление практических навыков работы с системой Visual Studio; освоение инструментальных средств отладки (точки останова, условные точки останова, пошаговое выполнение, окна Autos, Locals, Watch, Immediate Window); проектирование и обработка исключений в среде .NET.
+> **Цель занятия:** Закрепление практических навыков работы с системой Visual Studio; освоение инструментальных средств отладки (точки останова, условные точки останова, пошаговое выполнение, окна Autos, Locals, Watch, Immediate Window); обработка исключений деления на ноль в среде .NET.
 
 ---
 
@@ -17,11 +17,11 @@
 |:---:|:---:|
 | ![Точки останова](docs/images/image1_breakpoints.png) | ![Окна Locals и Watch](docs/images/image2_watch_locals.png) |
 
-| Пошаговая отладка (F10/F11) и стек вызовов | Изменение переменных «на лету» (Variable Mutation) |
+| Пошаговая отладка (F10) и стек вызовов | Изменение переменных «на лету» (Variable Mutation) |
 |:---:|:---:|
 | ![Пошаговая отладка](docs/images/image3_step_execution.png) | ![Изменение переменных](docs/images/image4_variable_mutation.png) |
 
-| Условные точки останова (Conditional Breakpoints) | Окно Exception Settings и обработка сбоев |
+| Условные точки останова (Conditional Breakpoints) | Задание 3: Простое деление на 0 и Exception Settings |
 |:---:|:---:|
 | ![Условные точки останова](docs/images/image5_conditional_breakpoint.png) | ![Обработка исключений](docs/images/image6_exception_handling.png) |
 
@@ -40,7 +40,7 @@ belous1011/
 │   ├── 10-11.csproj                      # Файл проекта MSBuild (.NET Framework 4.7.2)
 │   ├── 10-11.sln                         # Решение Visual Studio
 │   ├── 10-11.slnx                        # Решение Visual Studio (.slnx)
-│   ├── Program.cs                        # Простой и понятный исходный код (1 файл)
+│   ├── Program.cs                        # Простой и понятный код без сложных формул
 │   ├── App.config                        # Конфигурация приложения
 │   └── Properties/
 │       └── AssemblyInfo.cs               # Метаданные сборки
@@ -59,7 +59,7 @@ belous1011/
 
 ## 💻 Исходный код (`Program.cs`)
 
-Программа намеренно написана компактно и прозрачно в **одном файле**, чтобы легко продемонстрировать преподавателю каждый инструмент отладчика:
+Программа намеренно написана компактно и без сложных формул:
 
 ```csharp
 using System;
@@ -74,48 +74,45 @@ namespace _10_11
             Console.WriteLine("  Практическая работа №10-11: Отладка программы в C#");
             Console.WriteLine("==========================================================\n");
 
-            // 1. Итерационный цикл (для демонстрации Breakpoints, Locals, Autos, Watch)
-            double sum = 0;
+            // 1. Итерационный цикл (для точек останова F9, окон Locals, Autos, Watch)
+            int sum = 0;
             int multiplier = 2; // Переменная для изменения «на лету» в окне Watch
 
-            Console.WriteLine("--- 1. Итерационный расчет с контролем ошибок ---");
+            Console.WriteLine("--- 1. Итерационный цикл ---");
             for (int i = 1; i <= 5; i++)
             {
-                try
-                {
-                    // Точка останова #1: клавиша F9 на этой строке
-                    double y = Calculate(i);
-                    sum += y * multiplier;
-                    Console.WriteLine($"Шаг {i}: x = {i}, y = {y,6:F2}, sum = {sum,6:F2}");
-                }
-                catch (DivideByZeroException ex)
-                {
-                    Console.WriteLine($"Шаг {i}: x = {i} -> [Ошибка]: {ex.Message}");
-                }
+                // Точка останова #1: клавиша F9 на этой строке
+                int y = i * multiplier;
+                sum += y;
+                Console.WriteLine($"Шаг {i}: i = {i}, y = {y}, sum = {sum}");
             }
 
             // 2. Демонстрация изменения переменной в отладчике
-            Console.WriteLine("\n--- 2. Проверка модификации переменной multiplier ---");
+            Console.WriteLine("\n--- 2. Проверка изменения переменной multiplier ---");
             if (multiplier > 10)
             {
-                Console.WriteLine($"[УСПЕХ] Значение multiplier было изменено в отладчике: {multiplier}!");
+                Console.WriteLine($"[УСПЕХ] Значение multiplier было изменено в отладчике на: {multiplier}!");
             }
             else
             {
                 Console.WriteLine($"Обычный режим: значение multiplier = {multiplier}");
             }
 
-            // 3. Организация обработки исключений (try - catch - finally)
-            Console.WriteLine("\n--- 3. Демонстрация блока try-catch-finally ---");
+            // 3. Обработка исключения (деление на ноль без сложных формул)
+            Console.WriteLine("\n--- 3. Обработка исключения: деление на ноль ---");
             try
             {
-                Console.WriteLine("Вызов функции Calculate(3), приводящей к делению на 0...");
-                double res = Calculate(3);
-                Console.WriteLine($"Результат: {res}");
+                int a = 10;
+                int b = 0; // делитель равен 0
+
+                Console.WriteLine($"Попытка деления {a} на {b}...");
+                int result = a / b; // здесь возникает исключение System.DivideByZeroException
+                Console.WriteLine($"Результат: {result}");
             }
             catch (DivideByZeroException ex)
             {
-                Console.WriteLine($"[Блок catch]: Перехвачено исключение: {ex.Message}");
+                // Точка останова для перехвата исключения
+                Console.WriteLine($"[Блок catch]: Ошибка! Деление на ноль невозможно ({ex.Message})");
             }
             finally
             {
@@ -123,19 +120,6 @@ namespace _10_11
             }
 
             Console.WriteLine("\nПрограмма успешно завершена.");
-        }
-
-        static double Calculate(double x)
-        {
-            double numerator = x * x + 4;
-            double denominator = x - 3; // при x = 3 знаменатель равен 0
-
-            if (denominator == 0)
-            {
-                throw new DivideByZeroException("Знаменатель равен 0! Деление на ноль невозможно.");
-            }
-
-            return numerator / denominator;
         }
     }
 }
