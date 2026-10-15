@@ -1,0 +1,22 @@
+## Visual Studio / Roslyn / MSBuild
+.vs/
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.ide
+*.DotSettings.user
+
+## Build Results
+*.exe
+*.dll
+*.pdb
+!docs/images/**
+
+## Scratch / temp
+doc_content.txt
+*.log
