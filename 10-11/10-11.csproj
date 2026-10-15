@@ -44,10 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="DebuggerDemo.cs" />
-    <Compile Include="FunctionTabulator.cs" />
-    <Compile Include="MathCalculationException.cs" />
-    <Compile Include="TaylorSeriesCalculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
