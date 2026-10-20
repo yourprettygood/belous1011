@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 
 namespace _10_11
 {
@@ -6,27 +8,47 @@ namespace _10_11
     {
         static void Main(string[] args)
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+            // Настройка слушателя отладочных сообщений для вывода классов Debug и Trace в консоль и файл
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            Trace.Listeners.Add(new TextWriterTraceListener("debug_trace.log"));
+            Trace.AutoFlush = true;
+
             Console.WriteLine("==========================================================");
-            Console.WriteLine("  Практическая работа №10-11: Отладка программы в C#");
+            Console.WriteLine("  Практическая работа №12: Применение отладочных классов");
             Console.WriteLine("==========================================================\n");
 
-            // 1. Итерационный цикл (для точек останова F9, окон Locals, Autos, Watch)
+            Debug.WriteLine("[DEBUG]: Старт программы и инициализация отладочных слушателей.");
+
+            // 1. Итерационный цикл и диагностические утверждения (Debug.Assert, Debug.WriteLine)
             int sum = 0;
             int multiplier = 2; // Переменная для изменения «на лету» в окне Watch
 
-            Console.WriteLine("--- 1. Итерационный цикл ---");
+            // Проверка входного инварианта с помощью отладочного класса
+            Debug.Assert(multiplier > 0, "Множитель multiplier должен быть строго больше 0!");
+
+            Console.WriteLine("--- 1. Итерационный цикл с отладочными проверками ---");
             for (int i = 1; i <= 5; i++)
             {
-                // Точка останова #1: клавиша F9 на этой строке
+                // Точка останова #1: клавиша F9
                 int y = i * multiplier;
                 sum += y;
+
+                // Отладочный вывод по условию (Debug.WriteLineIf)
+                Debug.WriteLineIf(i == 3, $"[DEBUG]: Достигнут контрольный шаг i = {i}, текущая sum = {sum}");
+
                 Console.WriteLine($"Шаг {i}: i = {i}, y = {y}, sum = {sum}");
             }
+
+            // Утверждение проверки корректности накопления суммы
+            Debug.Assert(sum == 30, $"Ожидаемая сумма 30, но получено: {sum}");
 
             // 2. Демонстрация изменения переменной в отладчике
             Console.WriteLine("\n--- 2. Проверка изменения переменной multiplier ---");
             if (multiplier > 10)
             {
+                Trace.WriteLine($"[TRACE]: Значение переменной изменено в процессе отладки на: {multiplier}");
                 Console.WriteLine($"[УСПЕХ] Значение multiplier было изменено в отладчике на: {multiplier}!");
             }
             else
@@ -34,27 +56,36 @@ namespace _10_11
                 Console.WriteLine($"Обычный режим: значение multiplier = {multiplier}");
             }
 
-            // 3. Обработка исключения (деление на ноль без сложных формул)
-            Console.WriteLine("\n--- 3. Обработка исключения: деление на ноль ---");
+            // 3. Диагностика исключений с помощью Trace и Debug.Assert
+            Console.WriteLine("\n--- 3. Применение отладочных классов при обработке ошибок ---");
             try
             {
                 int a = 10;
                 int b = 0; // делитель равен 0
 
-                Console.WriteLine($"Попытка деления {a} на {b}...");
-                int result = a / b; // здесь возникает исключение System.DivideByZeroException
+                Trace.WriteLine($"[TRACE]: Подготовка к делению a={a} на b={b}...");
+
+                // Отладочное утверждение перед критической операцией
+                if (b == 0)
+                {
+                    Debug.WriteLine("[DEBUG WARNING]: Зафиксирован нулевой делитель перед вычислением!");
+                }
+
+                int result = a / b; // вызов исключения DivideByZeroException
                 Console.WriteLine($"Результат: {result}");
             }
             catch (DivideByZeroException ex)
             {
-                // Точка останова для перехвата исключения
+                Trace.WriteLine($"[TRACE ERROR]: Перехвачена ошибка времени выполнения: {ex.Message}");
                 Console.WriteLine($"[Блок catch]: Ошибка! Деление на ноль невозможно ({ex.Message})");
             }
             finally
             {
+                Trace.WriteLine("[TRACE]: Завершение блока вычислений и освобождение ресурсов.");
                 Console.WriteLine("[Блок finally]: Ресурсы освобождены, блок завершил работу.");
             }
 
+            Debug.WriteLine("[DEBUG]: Завершение работы программы.");
             Console.WriteLine("\nПрограмма успешно завершена.");
 
             if (!Console.IsInputRedirected && (args.Length == 0 || args[0] != "--auto"))
